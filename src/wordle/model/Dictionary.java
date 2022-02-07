@@ -1,7 +1,5 @@
 package wordle.model;
 
-import wordle.exceptions.WrongPathException;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,16 +12,11 @@ public class Dictionary {
     List<String> words;
     ThreadLocalRandom random = ThreadLocalRandom.current();
 
-    public Dictionary(Path pathToWords) throws WrongPathException {
-        try {
-            words = Files.lines(pathToWords)
-                    .filter(s -> s.length() == 5)
-                    .sorted()
-                    .toList();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new WrongPathException();
-        }
+    public Dictionary(Path pathToWords) throws IOException {
+        words = Files.lines(pathToWords)
+                .filter(s -> s.length() == 5)
+                .sorted()
+                .toList();
     }
 
     public String getRandomWord() {

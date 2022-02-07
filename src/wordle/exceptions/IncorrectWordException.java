@@ -8,5 +8,6 @@ public class IncorrectWordException extends WordleException{
         controller.VIEW.DESCRIPTOR.setText("Incorrect word!");
         controller.updateTries();
         controller.MODEL.incRow();
+        controller.VIEW.highlightRow(controller.MODEL.getRow());
     }
 }

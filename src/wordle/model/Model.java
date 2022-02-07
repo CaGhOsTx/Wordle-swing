@@ -4,28 +4,38 @@ package wordle.model;
 import wordle.exceptions.*;
 import wordle.view.LetterBoxStyle;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import static wordle.view.LetterBoxStyle.*;
 
+/**
+ * Model for the Wordle game, access the singleton through {@link Model#getSingleton()} method.
+ */
 public class Model {
     private static Model MODEL;
-    int row = 0, column = 0, tries = 6;
-    String wordToGuess;
-    char[][] letters = new char[6][5];
-    Dictionary words = new Dictionary(Path.of("words.txt"));
+    private int row = 0, column = 0, tries = 6;
+    private String wordToGuess;
+    private final char[][] letters = new char[6][5];
+    private final Dictionary words = new Dictionary(Path.of("src/resources/words.txt"));
 
-    private Model() throws WrongPathException {
+    private Model() throws IOException {
         setRandomWord();
+        System.out.println("Word to guess: " + wordToGuess);
     }
 
     public int getTries() {
         return tries;
     }
 
-    public static Model getInstance() throws WrongPathException {
+    /**
+     * Singleton factory for {@link Model}.
+     * @return the singleton instance of {@link Model}
+     * @throws IOException if the words.txt file cannot be accessed for any reason.
+     */
+    public static Model getSingleton() throws IOException {
         return MODEL == null ? MODEL = new Model() : MODEL;
     }
 
@@ -35,10 +45,6 @@ public class Model {
 
     public boolean columnWithinBounds() {
         return column < letters[row].length;
-    }
-
-    public char getCurrentLetter() {
-        return letters[row][column];
     }
 
     public void setRandomWord() {

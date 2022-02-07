@@ -15,7 +15,7 @@ final class LetterBox extends JLabel {
         setBackground(BROWN.get());
         setForeground(WHITE.get());
         setFont(ROBOTO);
-        setBorder(BorderFactory.createLineBorder(Color.black, 2));
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
     }
 
     @Override

@@ -39,15 +39,19 @@ enum ControllerAction implements WordleAction {
         public void execute(Controller controller) {
             System.out.println("pressed enter");
             try {
-                List<LetterBoxStyle> styles = controller.MODEL.processWord();
-                applyStyleToLetterContainers(controller, styles);
-                controller.MODEL.analyse(styles);
-            } catch (WordleException e) {
-                e.resolve(controller);
+                analyzeWordAndApplyStyle(controller);
+            } catch (WordleException exception) {
+                exception.resolve(controller);
             }
         }
 
-        private void applyStyleToLetterContainers(Controller controller, List<LetterBoxStyle> styles) throws WordTooShortException, InvalidWordException {
+        private void analyzeWordAndApplyStyle(Controller controller) throws WordTooShortException, InvalidWordException, WonException, LostException, IncorrectWordException {
+            List<LetterBoxStyle> styles = controller.MODEL.processWord();
+            updateView(controller, styles);
+            controller.MODEL.analyse(styles);
+        }
+
+        private void updateView(Controller controller, List<LetterBoxStyle> styles) {
             int row = controller.MODEL.getRow(), column = 0;
             for(LetterBoxStyle style : styles)
                 controller.VIEW.changeStyle(row, column++, style);

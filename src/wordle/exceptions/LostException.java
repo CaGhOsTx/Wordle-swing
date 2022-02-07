@@ -5,12 +5,10 @@ import wordle.controller.Controller;
 public class LostException extends WordleException {
     @Override
     public void resolve(Controller controller) {
-        controller.VIEW.DESCRIPTOR.setText("" +
-                "<html><p>You lost! The word was <br/>"
-                + controller.MODEL.getWordToGuess().toUpperCase()
-                + "<br/>Press space to play again</p></html");
-        controller.VIEW.TRIES.setVisible(false);
+        controller.VIEW.DESCRIPTOR.setText("You lost! Correct word: " + controller.MODEL.getWordToGuess().toUpperCase());
+        controller.VIEW.TRIES.setText("Press space to play again!");
         controller.VIEW.removeKeyListener(controller.MAIN);
         controller.VIEW.addKeyListener(controller.RESTART);
+        controller.VIEW.removeHighlight();
     }
 }
