@@ -55,6 +55,7 @@ enum ControllerAction implements WordleAction {
             int row = controller.MODEL.getRow(), column = 0;
             for(LetterBoxStyle style : styles)
                 controller.VIEW.changeStyle(row, column++, style);
+            controller.VIEW.HELPER.setText("Try: " + controller.MODEL.getSuggestion());
         }
     },
     BACKSPACE {

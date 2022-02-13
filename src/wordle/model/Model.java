@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static wordle.view.LetterBoxStyle.*;
 
@@ -19,11 +20,12 @@ public class Model {
     private int row = 0, column = 0, tries = 6;
     private String wordToGuess;
     private final char[][] letters = new char[6][5];
-    private final Dictionary words = new Dictionary(Path.of("src/resources/words.txt"));
+    private final Dictionary files = new Dictionary(Path.of("src/resources/words.txt"), Path.of("src/resources/wordles.txt"));
+
+    private List<String> wordles = files.getWordles();
 
     private Model() throws IOException {
         setRandomWord();
-        System.out.println("Word to guess: " + wordToGuess);
     }
 
     public int getTries() {
@@ -48,7 +50,8 @@ public class Model {
     }
 
     public void setRandomWord() {
-        wordToGuess = words.getRandomWord();
+        wordToGuess = files.getRandomWord();
+        System.out.println("Word to guess: " + wordToGuess);
     }
 
     public String getWordToGuess() {
@@ -58,7 +61,7 @@ public class Model {
     public List<LetterBoxStyle> processWord() throws WordTooShortException, InvalidWordException {
         String word = getCurrentWord();
         if(word.length() != 5) throw new WordTooShortException();
-        if(!words.isValidWord(word)) throw new InvalidWordException();
+        if(!files.isValidWord(word)) throw new InvalidWordException();
         return getStyles(word);
     }
 
@@ -72,13 +75,26 @@ public class Model {
     private List<LetterBoxStyle> getStyles(String word) {
         List<LetterBoxStyle> colors = new ArrayList<>();
         for (int i = 0; i < word.length(); i++) {
-            if(lettersAreEqualAtIndex(word, i))
+            int finalI = i;
+            if(lettersAreEqualAtIndex(word, i)) {
                 colors.add(GREEN);
-            else if (wordToGuessContainsLetter(word, i))
+                wordles.removeIf(s -> s.charAt(finalI) != word.charAt(finalI));
+            }
+            else if (wordToGuessContainsLetter(word, i)) {
                 colors.add(YELLOW);
-            else colors.add(GRAY);
+                wordles.removeIf(s -> s.charAt(finalI) == word.charAt(finalI)
+                        && !s.contains(word.substring(finalI, finalI + 1)));
+            }
+            else {
+                colors.add(GRAY);
+                wordles.removeIf(s -> s.contains(word.substring(finalI, finalI + 1)));
+            }
         }
         return colors;
+    }
+
+    public String getSuggestion() {
+        return wordles.get(ThreadLocalRandom.current().nextInt(0, wordles.size()));
     }
 
     private boolean wordToGuessContainsLetter(String word, int i) {
@@ -135,5 +151,6 @@ public class Model {
         setRandomWord();
         row = 0;
         column = 0;
+        wordles = files.getWordles();
     }
 }

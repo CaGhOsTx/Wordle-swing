@@ -10,5 +10,6 @@ public class LostException extends WordleException {
         controller.VIEW.removeKeyListener(controller.MAIN);
         controller.VIEW.addKeyListener(controller.RESTART);
         controller.VIEW.removeHighlight();
+        controller.VIEW.removeHelper();
     }
 }

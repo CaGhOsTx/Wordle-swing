@@ -46,7 +46,6 @@ enum ControllerListeners {
 
         }
     });
-
     private final Function<Controller, KeyListener> LISTENER;
 
     ControllerListeners(Function<Controller, KeyListener> LISTENER) {

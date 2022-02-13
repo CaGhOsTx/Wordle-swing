@@ -13,13 +13,13 @@ public final class Controller {
     public final KeyListener MAIN = ControllerListeners.MAIN.linkTo(this);
     public final KeyListener RESTART = ControllerListeners.RESTART.linkTo(this);
 
-    private Controller() throws IOException {
-        MODEL = Model.getSingleton();
+    private Controller(Model model) {
+        MODEL = model;
         VIEW.addKeyListener(MAIN);
     }
 
     public static Controller getInstance() throws IOException {
-        CONTROLLER = CONTROLLER == null ? new Controller() : CONTROLLER;
+        CONTROLLER = CONTROLLER == null ? new Controller(Model.getSingleton()) : CONTROLLER;
         CONTROLLER.updateTries();
         return CONTROLLER;
     }

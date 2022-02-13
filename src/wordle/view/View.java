@@ -4,6 +4,7 @@ import wordle.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import static wordle.view.LetterBoxStyle.PRESET;
@@ -26,8 +27,11 @@ public final class View extends JFrame {
     private static View VIEW;
 
     static Font ROBOTO = new Font("Roboto", Font.PLAIN, 42);
-    public final JLabel DESCRIPTOR = new JLabel();
-    public final JLabel TRIES = new JLabel();
+    public final JLabel DESCRIPTOR = new CustomLabel();
+    public final JLabel TRIES = new CustomLabel();
+    public final JLabel HELPER = new CustomLabel();
+    public final JButton ENABLE_HELPER = new HelperButton();
+
 
     public final GridContainer GRID = new GridContainer();
 
@@ -35,9 +39,12 @@ public final class View extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
         getContentPane().setBackground(BEIGE.get());
+        add(ENABLE_HELPER);
+        add(HELPER);
         add(GRID);
         add(DESCRIPTOR);
         add(TRIES);
+        initialiseButton();
         initialiseLabels();
         pack();
         setLocationRelativeTo(null);
@@ -46,7 +53,7 @@ public final class View extends JFrame {
     }
 
     private Dimension bufferedMinSize() {
-        return new Dimension(getSize().width + 100, getSize().height);
+        return new Dimension(getSize().width + 100, getSize().height + 75);
     }
 
     public static View getInstance() {
@@ -73,6 +80,10 @@ public final class View extends JFrame {
         GRID.removeHighlight();
     }
 
+    public void removeHelper() {
+        HELPER.setVisible(false);
+    }
+
     public void setTries(int i) {
         TRIES.setText(i + " guesses remaining!");
     }
@@ -83,21 +94,27 @@ public final class View extends JFrame {
     }
 
     private void initialiseLabels() {
+        initialiseHelper();
         initialiseDescriptor();
         initialiseTries();
     }
 
+    private void initialiseButton() {
+        ENABLE_HELPER.addActionListener(e -> HELPER.setVisible(!HELPER.isVisible()));
+    }
+
+
+    private void initialiseHelper() {
+        HELPER.setText("Enabled! Try any word");
+        HELPER.setVisible(false);
+    }
+
     private void initialiseDescriptor() {
-        DESCRIPTOR.setFont(ROBOTO.deriveFont(Font.PLAIN, 42));
         DESCRIPTOR.setText("Try to guess the right word!");
-        DESCRIPTOR.setAlignmentX(Component.CENTER_ALIGNMENT);
     }
 
     private void initialiseTries() {
-        TRIES.setFont(ROBOTO.deriveFont(Font.PLAIN, 28));
-        TRIES.setAlignmentX(Component.CENTER_ALIGNMENT);
         TRIES.setMinimumSize(new Dimension(getWidth(), 250));
-        TRIES.setVisible(true);
     }
 
     private final class GridContainer extends JPanel {

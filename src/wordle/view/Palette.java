@@ -9,6 +9,7 @@ public enum Palette {
     GREEN(76, 187, 23),
     YELLOW(253, 219, 39),
     GRAY(105, 105, 105),
+    RED(255,0,0),
     BLACK(36,31,28);
 
     private final Color hex;
