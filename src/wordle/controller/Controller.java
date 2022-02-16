@@ -7,11 +7,13 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 
 public final class Controller {
+    public boolean isRunning = true;
     private static Controller CONTROLLER;
     public  View VIEW = View.getInstance();
     public  Model MODEL;
     public final KeyListener MAIN = ControllerListeners.MAIN.linkTo(this);
     public final KeyListener RESTART = ControllerListeners.RESTART.linkTo(this);
+    public int lostCount;
 
     private Controller(Model model) {
         MODEL = model;

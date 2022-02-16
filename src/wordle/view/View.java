@@ -6,14 +6,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
 
 import static wordle.view.LetterBoxStyle.PRESET;
 import static wordle.view.Palette.BEIGE;
 
 public final class View extends JFrame {
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(View::startOrCrashIfWordsAreMissing);
+    public static void main(String[] args) throws IOException, InterruptedException, InvocationTargetException {
+        SwingUtilities.invokeAndWait(View::startOrCrashIfWordsAreMissing);
+        String retry = "r";
+        while(retry.equals("r")) {
+            Player p = new Player(Controller.getInstance());
+            p.guess(100, 1);
+            retry = new Scanner(System.in).nextLine();
+        }
     }
 
     private static void startOrCrashIfWordsAreMissing() {
@@ -105,8 +113,8 @@ public final class View extends JFrame {
 
 
     private void initialiseHelper() {
-        HELPER.setText("Enabled! Try any word");
-        HELPER.setVisible(false);
+        HELPER.setText("Try: adieu");
+        HELPER.setVisible(true);
     }
 
     private void initialiseDescriptor() {

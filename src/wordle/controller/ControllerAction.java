@@ -18,7 +18,6 @@ enum ControllerAction implements WordleAction {
 
         @Override
         public void execute(Controller controller) {
-            System.out.println("pressed " + letter);
             Model m = controller.MODEL;
             if(m.columnWithinBounds()) {
                 m.updateCurrentLetter(letter);
@@ -37,11 +36,16 @@ enum ControllerAction implements WordleAction {
 
         @Override
         public void execute(Controller controller) {
-            System.out.println("pressed enter");
             try {
                 analyzeWordAndApplyStyle(controller);
             } catch (WordleException exception) {
                 exception.resolve(controller);
+                if(exception instanceof LostException) {
+                    controller.lostCount++;
+                    controller.isRunning = false;
+                }
+                if(exception instanceof WonException)
+                    controller.isRunning = false;
             }
         }
 
@@ -55,7 +59,8 @@ enum ControllerAction implements WordleAction {
             int row = controller.MODEL.getRow(), column = 0;
             for(LetterBoxStyle style : styles)
                 controller.VIEW.changeStyle(row, column++, style);
-            controller.VIEW.HELPER.setText("Try: " + controller.MODEL.getSuggestion());
+            controller.VIEW.HELPER.setText("Try: " + controller.MODEL.getSuggestion() + " (" + controller.MODEL.getChancePercentage() + "%)");
+            controller.MODEL.updateSuggestion();
         }
     },
     BACKSPACE {
@@ -66,7 +71,6 @@ enum ControllerAction implements WordleAction {
 
         @Override
         public void execute(Controller controller) {
-            System.out.println("pressed backspace");
             Model m = controller.MODEL;
             m.decColumn();
             m.updateCurrentLetter('\0');

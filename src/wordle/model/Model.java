@@ -7,8 +7,9 @@ import wordle.view.LetterBoxStyle;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Set;
 
 import static wordle.view.LetterBoxStyle.*;
 
@@ -18,7 +19,7 @@ import static wordle.view.LetterBoxStyle.*;
 public class Model {
     private static Model MODEL;
     private int row = 0, column = 0, tries = 6;
-    private String wordToGuess;
+    private String wordToGuess, suggestion = "orate";
     private final char[][] letters = new char[6][5];
     private final Dictionary files = new Dictionary(Path.of("src/resources/words.txt"), Path.of("src/resources/wordles.txt"));
 
@@ -69,7 +70,7 @@ public class Model {
         StringBuilder word = new StringBuilder();
         for(int i = 0; i < column; i++)
             word.append(letters[row][i]);
-        return word.toString();
+        return word.toString().toLowerCase();
     }
 
     private List<LetterBoxStyle> getStyles(String word) {
@@ -82,8 +83,7 @@ public class Model {
             }
             else if (wordToGuessContainsLetter(word, i)) {
                 colors.add(YELLOW);
-                wordles.removeIf(s -> s.charAt(finalI) == word.charAt(finalI)
-                        && !s.contains(word.substring(finalI, finalI + 1)));
+                wordles.removeIf(s -> s.charAt(finalI) == word.charAt(finalI) || !s.contains(word.substring(finalI, finalI + 1)));
             }
             else {
                 colors.add(GRAY);
@@ -94,7 +94,26 @@ public class Model {
     }
 
     public String getSuggestion() {
-        return wordles.get(ThreadLocalRandom.current().nextInt(0, wordles.size()));
+        return suggestion;
+    }
+
+    public void updateSuggestion() {
+        if(!wordles.isEmpty()) {
+            for(int i = 0; i < wordles.size(); i++) {
+                if(uniqueLetters(wordles.get(i)) == 5) {
+                    suggestion = wordles.remove(i);
+                    return;
+                }
+            }
+            suggestion = wordles.remove(0);
+        }
+    }
+
+    private int uniqueLetters(String s) {
+        Set<Character> chars = new HashSet<>();
+        for(char c : s.toCharArray())
+            chars.add(c);
+        return chars.size();
     }
 
     private boolean wordToGuessContainsLetter(String word, int i) {
@@ -132,6 +151,10 @@ public class Model {
         return column;
     }
 
+    public float getChancePercentage() {
+        return 1 / ((float) wordles.size() + 1) * 100f;
+    }
+
     public void analyse(List<LetterBoxStyle> styles) throws WonException, LostException, IncorrectWordException {
         int count = countGreenLetters(styles);
         if(count == 5) throw new WonException();
@@ -152,5 +175,9 @@ public class Model {
         row = 0;
         column = 0;
         wordles = files.getWordles();
+    }
+
+    public List<String> getWordles() {
+        return files.getWordles();
     }
 }

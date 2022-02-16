@@ -17,10 +17,8 @@ public class Dictionary {
 
     public Dictionary(Path pathToWords, Path pathToWordles) throws IOException {
         words = Files.lines(pathToWords)
-                .filter(s -> s.length() == 5)
                 .collect(Collectors.toSet());
         wordles = Files.lines(pathToWordles)
-                .filter(s -> s.length() == 5)
                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 
@@ -33,6 +31,6 @@ public class Dictionary {
     }
 
     public List<String> getWordles() {
-        return new ArrayList<>(wordles);
+        return new ArrayList<>(words);
     }
 }
